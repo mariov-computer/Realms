@@ -1,102 +1,53 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class PlayerScript : MonoBehaviour
 {
-    [Header("Movement")]
-    [Tooltip("Speed of horizontaly Movement")]
-    [Range(5, 15)]
-    [SerializeField] float speed = 1;
-    public bool facingRight = true;
-    private Vector2 movementInput = Vector2.zero;
+    [SerializeField] private float speed;
+    private Rigidbody2D body;
+    //these handle the animations components
+    private Animator anim;
+    private bool grounded;
 
-    [Header("Jumping")]
-    [Tooltip("Jumping height")]
-    [Range(0, 100)]
-    [SerializeField] float thrust = 300;
-    [SerializeField] bool grounded = true;
-    bool jumped;
-
-    Rigidbody2D rb;
-    
-
-    //OnMove checks if controlls for the movement are pressed
-    public void OnMove(InputAction.CallbackContext context)
-    {
-        movementInput = context.ReadValue<Vector2>();
+    private void Awake()
+    {//grab references
+        body = GetComponent<Rigidbody2D>();
+        anim = GetComponent<Animator>();
     }
 
-    //OnJump checks if controlls for the jumping are pressed
-    public void OnJump(InputAction.CallbackContext context)
-    {
-        jumped = context.action.triggered;
-    }
-
-    //Jump is the class that includes jumping mechanics
-    void Jump()
-    {
-        //If jump is pressed and the player is on the ground, execute jumping
-        if (jumped && grounded)
-        {
-            //This will add a force to the players rigidbody, so the player will jump
-            rb.AddForce(transform.up * thrust * 100);
-            //Player is now in the air, therefore he cant jump anymore. Set this true again, if player hits the floor.
-            grounded = false;
-
-           
-        }
+    private void Update()
+    {//controls for flipping animations
+        float horizontalInput = Input.GetAxis("Horizontal");
+        body.velocity = new Vector2(horizontalInput * speed, body.velocity.y );
 
 
-    }
+        //allows for the player character to flip
+        if (horizontalInput > 0.01f)
+            transform.localScale = Vector3.one;
+        else if (horizontalInput < -0.01f)
+            transform.localScale = new Vector3(-1, 1, 1);
 
-    //Move is the class that includes running mechanics
-    void Move()
-    {
-        //Add force to the players rigidbody in the direction, of the input in movementInput.x
-        rb.velocity = new Vector2(movementInput.x * speed, rb.velocity.y);
-       
-       
-    }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        //Get the rigidbody attached to the player
-        rb = GetComponent<Rigidbody2D>();
-       
 
-        PlayerPrefs.SetInt("map_active", 0);
-    }
-
-    // Update is called permanently
-    void FixedUpdate()
-    {
-        //Give playerAnimator Instructions
-        
-       
-
-       // int map_mactive = PlayerPrefs.GetInt("map_active");
-
-        //Create another class for jumping to organize the code
-        //if (map_mactive == 0)
-        
+        if (Input.GetKey(KeyCode.Space) && grounded)
             Jump();
-            Move();
-        
+
+
+        //set animation numbers
+        anim.SetBool("run", horizontalInput != 0);
+        anim.SetBool("grounded", grounded);
     }
 
-    // OnCollisionEnter2D is called when the object collides with an collider of another object
-    void OnCollisionEnter2D(Collision2D col)
+
+    private void Jump()
     {
-
-        //checks wethere the collision is made with the floor
-        if (col.gameObject.tag == "Floor")
-        {
-
-            //This bool will make jumping possible if true
-            grounded = true;
-        }
+        body.velocity = new Vector2(body.velocity.x, speed);
+        anim.SetTrigger("jump");
+        grounded = false;
+    }
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "Ground")
+            grounded = true; 
     }
 }
+
