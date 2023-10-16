@@ -1,5 +1,5 @@
 {
-    "name": "Input2",
+    "name": "LevelControls",
     "maps": [
         {
             "name": "PlayerControls",
@@ -21,6 +21,15 @@
                     "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "Press",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Fire",
+                    "type": "Button",
+                    "id": "33e25264-c8f4-4977-8f06-f579e93ba245",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
                     "initialStateCheck": false
                 }
             ],
@@ -68,6 +77,17 @@
                     "action": "Movement",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "d02f8e92-cbd5-489b-a555-b5a92bda1df3",
+                    "path": "<Keyboard>/space",
+                    "interactions": "Press(behavior=2)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Fire",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }
