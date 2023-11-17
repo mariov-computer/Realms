@@ -8,6 +8,10 @@ public class PlayerHealth : MonoBehaviour
     private int currentHealth;    // Current health points
     public HealthBar healthbar;   // Reference to the HealthBar script
 
+    //Manages the games quit, main menu and restart functions
+    public GameManager gameManager;
+    private bool isDead;
+
     void Start()
     {
         // Initialize current health to maxHealth when the game starts
@@ -25,9 +29,11 @@ public class PlayerHealth : MonoBehaviour
         healthbar.setHealth(currentHealth);
 
         // Check if the player's health is less than or equal to 0
-        if (currentHealth <= 0)
+        if (currentHealth <= 0 && !isDead)
         {
-            // Player is dead, you can handle game over logic here
+            isDead = true;
+            gameManager.gameOver();
+            // Player is dead, trigger the Die method
             Die();
         }
     }
@@ -35,9 +41,11 @@ public class PlayerHealth : MonoBehaviour
     // Method to handle player death
     void Die()
     {
-        // For example, you can reload the scene or show a game over screen
-        // For now, let's just deactivate the player GameObject
-        gameObject.SetActive(false);
+        // Destroy the player GameObject
+        Destroy(gameObject);
+
+        // Call the gameOver method from GameManager
+        FindObjectOfType<GameManager>().gameOver();
     }
 
     // Method to restore player health (if needed)

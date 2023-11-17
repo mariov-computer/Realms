@@ -8,6 +8,14 @@ public class AIChase: MonoBehaviour
     public float speed = 5f;  // The speed at which the enemy moves
     public float detectionRadius = 10f;  // The radius within which the enemy detects and chases the target
 
+    public string targetObjectName = "Player"; // The name of the target GameObject
+
+    void Start()
+    {
+        // Find the target GameObject by name
+        target = GameObject.Find(targetObjectName).transform;
+    }
+
     void Update()
     {
         if (target != null)

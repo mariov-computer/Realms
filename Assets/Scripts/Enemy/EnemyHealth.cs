@@ -41,6 +41,9 @@ public class EnemyHealth : MonoBehaviour
 
     }
 
+    public RandEnemySpawner enemySpawner;
+
+
     // Method to deal damage to the player
     public void InflictDamageToPlayer(int damage)
     {
