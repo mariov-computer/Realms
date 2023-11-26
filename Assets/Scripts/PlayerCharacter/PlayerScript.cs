@@ -1,4 +1,7 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerScript : MonoBehaviour
 {
@@ -21,7 +24,7 @@ public class PlayerScript : MonoBehaviour
         boxCollider = GetComponent<BoxCollider2D>();
     }
 
-    private void Update()
+    public void Update()
     {//controls for flipping animations
         horizontalInput = Input.GetAxis("Horizontal");
         body.velocity = new Vector2(horizontalInput * speed, body.velocity.y );
@@ -64,6 +67,11 @@ public class PlayerScript : MonoBehaviour
         }
         else
             wallJumpCooldown += Time.deltaTime;
+
+        if(transform.position.y < -4)
+        {
+            GameOver();
+        }
     }
 
 
@@ -120,6 +128,11 @@ public class PlayerScript : MonoBehaviour
    public bool canAttack()
     {
        return horizontalInput == 0 && isGrounded() && !onWall();
+    }
+
+    public void GameOver()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }
 
