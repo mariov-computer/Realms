@@ -18,7 +18,7 @@ public class PlayerAttack : MonoBehaviour
     private void Update()
     {
         if (Input.GetMouseButton(0) && cooldownTimer > attackCooldown && playerMovement.canAttack())
-          Attack();
+            Attack();
 
         cooldownTimer += Time.deltaTime;
     }
@@ -28,11 +28,27 @@ public class PlayerAttack : MonoBehaviour
         anim.SetTrigger("attack");
         cooldownTimer = 0;
 
-        fireballs[FindFireball()].transform.position = firePoint.position;
-        fireballs[FindFireball()].GetComponent<Projectile>().SetDirection(Mathf.Sign(transform.localScale.x));
-        //PLAYER PROJECTILE ATTACK - pool fire
+        // Get the mouse position in the world space
+        Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        mousePosition.z = 0;
 
+        // Calculate the direction from the player to the mouse position
+        Vector3 shootingDirection = (mousePosition - transform.position).normalized;
+
+        // Set the direction for the fireball
+        int fireballIndex = FindFireball();
+        GameObject fireball = fireballs[fireballIndex];
+        fireball.transform.position = new Vector3(firePoint.position.x, firePoint.position.y, fireball.transform.position.z);
+
+
+        // Activate the fireball and set its direction
+        Projectile projectileScript = fireball.GetComponent<Projectile>();
+        projectileScript.SetDirection(shootingDirection.x);
+
+        // PLAYER PROJECTILE ATTACK - pool fire
     }
+
+
     private int FindFireball()
     {
         for (int i = 0; i < fireballs.Length; i++)
@@ -41,7 +57,5 @@ public class PlayerAttack : MonoBehaviour
                 return i;
         }
         return 0;
-    } 
-    
-    
+    }
 }

@@ -1,46 +1,91 @@
 using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.UI;
 using UnityEngine;
 
 public class Health : MonoBehaviour
 {
-  [SerializeField] private float startingHealth;
+    [SerializeField] private float startingHealth;
     public float currentHealth { get; private set; }
     private Animator anim;
     private bool dead;
-  
+    private bool isDead;
+    private bool isInvincible = false;
+    public GameManager gameManager;
 
-  private void Awake()
-  {
-    currentHealth = startingHealth;
-    anim = GetComponent<Animator>();
-  }
+    [SerializeField] private float invincibilityDuration = 2.0f; // Adjust the invincibility duration as needed
 
-  public void TakeDamage(float _damage){
-    currentHealth = Mathf.Clamp(currentHealth - _damage, 0 , startingHealth);
-
-    if (currentHealth > 0){
-        //player hurt
-        anim.SetTrigger("hurt");
-        //iframes
+    private void Awake()
+    {
+        currentHealth = startingHealth;
+        anim = GetComponent<Animator>();
     }
-    else{
-        //player dead
-        if(!dead){
-            anim.SetTrigger("die");
-        GetComponent<PlayerScript>().enabled = false;
-        dead = true;
+
+    public void TakeDamage(float _damage)
+    {
+        if (!isInvincible)
+        {
+            currentHealth = Mathf.Clamp(currentHealth - _damage, 0, startingHealth);
+
+            if (currentHealth > 0 && !isDead)
+            {
+               
+                StartCoroutine(SetInvincibility());
+            }
+            else
+            {
+                // Player dead
+                if (!dead)
+                {
+                    anim.SetTrigger("die");
+
+                    //Player
+                 
+
+                    //Enemy
+                    if (GetComponent<EnemyPatrol>() != null)
+                        GetComponent<EnemyPatrol>().enabled = false;
+
+                    if (GetComponent<MeleeEnemy>() != null)
+                        GetComponent<MeleeEnemy>().enabled = false;
+                    
+                    //
+                    StartCoroutine(DieWithDelay());
+                    dead = true;
+                    isDead = true;
+                    gameObject.SetActive(false);
+                    gameManager.gameOver();
+                }
+            }
+
 
         }
-      
     }
-  }
-  public void AddHealth(float _value){
-    currentHealth = Mathf.Clamp(currentHealth + _value, 0 , startingHealth);
 
+    private IEnumerator SetInvincibility()
+    {
+        isInvincible = true;
+        yield return new WaitForSeconds(invincibilityDuration);
+        isInvincible = false;
+    }
 
-  }
+    private IEnumerator DieWithDelay()
+    {
+        // Wait for a short delay before performing the actual death actions
+        yield return new WaitForSeconds(1.0f); // Adjust the delay time as needed
 
+        // Disable the PlayerScript or perform other actions
+        GetComponent<PlayerScript>().enabled = false;
 
+        // Additional actions related to the player's death can be placed here
+    }
+
+    public void AddHealth(float _value)
+    {
+        currentHealth = Mathf.Clamp(currentHealth + _value, 0, startingHealth);
+
+        // Reset invincibility when adding health
+        if (currentHealth > 0)
+        {
+            isInvincible = false;
+        }
+    }
 }

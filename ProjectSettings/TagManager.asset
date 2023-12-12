@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Floor
   - Ground
+  - Enemy
+  - Health
   layers:
   - Default
   - TransparentFX
@@ -13,8 +15,8 @@ TagManager:
   - MiniMap
   - Water
   - UI
-  - 
-  - 
+  - Enemy
+  - Player
   - Ground
   - Wall
   - 
